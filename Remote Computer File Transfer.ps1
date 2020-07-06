@@ -175,7 +175,7 @@ foreach($computer in $remoteComputers)
 {
 	if(Test-Connection $computer -Quiet -Count 1)
 	{
-		#Transfer network drive full path creation 
+		#Transfer network drive full path creation
 		$networkDrive = "\\" + $computer + "\D$"
 
 		#Try to create network drive with given path

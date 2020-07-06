@@ -188,7 +188,7 @@ foreach($computer in $remoteComputers)
 			Write-Log -Message $_.Exception
         	Break
 		}
-		
+
 		$massage = "Network drive mapped to " + $computer
 		Write-Log -Message $massage
 		

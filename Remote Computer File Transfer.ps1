@@ -89,6 +89,7 @@ function Send-Report
 {
 	$body = Get-Content -Path $report -Raw
 	Send-MailMessage -To $receiverEmail -From $senderEmail -Subject $subject -Body $body -SmtpServer $smpt -Port $port
+	Remove-Item -Path $report
 }
 
 <#
@@ -231,7 +232,7 @@ foreach($computer in $remoteComputers)
 
 		$massage = "Network drive mapped to " + $computer
 		Write-Log -Message $massage
-		
+
 		#Transfer fodler full path creation
 		$destinationPath = "T:" + $transferFolder
 		Deploy-TransferFolder -Path $destinationPath
@@ -256,4 +257,3 @@ Write-Log -Message $logSeparator
 
 #Sends email with detailed report and deletes temporary ".\Report.txt" file
 Send-Report
-Remove-Item -Path $report

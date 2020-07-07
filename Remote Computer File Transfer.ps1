@@ -145,13 +145,15 @@ function Start-FileTransfer
 
 	foreach($file in $filesPaths)
 	{
+		#File name extraction from file full path
+		$fileName = Split-Path $file -leaf
+
+		$massage = "Transferring file " + $fileName + " file to " + $Computer + "..."
+		Write-Log -Message $massage
+		
 		try
 		{
-			#File name extraction from file full path
-			$fileName = Split-Path $file -leaf
-
-			$massage = "Transferring file " + $fileName + " file to " + $Computer + "..."
-			Write-Log -Message $massage
+			
 			Copy-Item -Path $file -Destination $DestinationPath
 			$massage = "File " + $fileName + " transferred to " + $Computer
 			Write-Log -Message $massage

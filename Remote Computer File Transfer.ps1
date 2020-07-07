@@ -104,22 +104,26 @@ Full path of the folder.
 .EXAMPLE
 Deploy-TransferFolder -Path "\\RemoteComputer\D$\Transfer Folder"
 
-.NOTES
-
 #>
 function Deploy-TransferFolder
 {
     param([String]$Path)
 
-    if((Test-Path $Item) -eq $false)
+    if((Test-Path $Path) -eq $false)
     {
-		Write-Log -Message $message "Does not exists"
+		$message = $networkDrive + $transferFolder + " does not exists"
+		Write-Log -Message $message
 
 		New-Item -Path $Path -ItemType "Directory"
 
 		$message = $networkDrive + $transferFolder + " folder created"
 		Write-Log -Message $message
-    }
+	}
+	else
+	{
+		$message = $networkDrive + $transferFolder + " folder checked and present"
+		Write-Log -Message $message
+	}
 }
 
 <#
@@ -135,11 +139,6 @@ Full path to file transfer folder.
 .PARAMETER Computer
 Name of the remote computer to which files are being transferred.
 
-.EXAMPLE
-An example
-
-.NOTES
-General notes
 #>
 function Start-FileTransfer
 {

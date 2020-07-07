@@ -161,7 +161,6 @@ function Start-FileTransfer
 			$massage = "ERROR - Fail to transfer " + $fileName + " file to " + $Computer
 			Write-Log -Message $massage
 			Write-Log -Message $_.Exception
-        	Break
 		}
 	}
 	$massage = "All files transferred to " + $Computer

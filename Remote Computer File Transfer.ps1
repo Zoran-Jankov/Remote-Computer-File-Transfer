@@ -18,6 +18,9 @@ Script generate log file and report that is sent via email to administrators.
 #Set Error Action to Silently Continue
 $ErrorActionPreference = "SilentlyContinue"
 
+#Clears the contents of the DNS client cache.
+Clear-DnsClientCache
+
 #Defining network drive thru which files will be to transferred
 $networkDrive = "T"
 

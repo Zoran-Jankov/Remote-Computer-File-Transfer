@@ -54,7 +54,7 @@ Writes a log entry
 
 .DESCRIPTION
 Creates a log entry with timestamp and message passed thru a parameter $Massage, and saves the log entry to log file
-".\File Transfer Log.txt"
+".\File Transfer Log.txt" Timestamp is not written if $Message parameter is defined $logSeparator.
 
 .PARAMETER Message
 String value to be writen in the log file alongside timestamp

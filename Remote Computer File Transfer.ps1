@@ -5,7 +5,7 @@ This script transfers files to remote computers.
 .DESCRIPTION
 This script transfers files to remote computers. In '.\Files Paths.txt' file user can write full paths to files for transfer, and
 in '.\Remote Computers.txt' user can write list of remote computers to which files are transferred, ether by hostname or IP address.
-Script generate log file and report that is sent via email to administrators.
+Script generate detailed log file and report that is sent via email to administrators.
 
 .NOTES
 	Version:        1.2
@@ -151,7 +151,7 @@ function Start-FileTransfer
 			#File name extraction from file full path
 			$fileName = Split-Path $file -leaf
 
-			$massage = "Transferring file " + $fileName + " file to " + $Computer
+			$massage = "Transferring file " + $fileName + " file to " + $Computer + "..."
 			Write-Log -Message $massage
 			Copy-Item -Path $file -Destination $DestinationPath
 			$massage = "File " + $fileName + " transferred to " + $Computer
@@ -159,15 +159,14 @@ function Start-FileTransfer
 		}
 		catch
 		{
-			$massage = "Fail to transfer " + $fileName + " file to " + $Computer
+			$massage = "ERROR - Fail to transfer " + $fileName + " file to " + $Computer
 			Write-Log -Message $massage
 			Write-Log -Message $_.Exception
         	Break
 		}
-
-		$massage = "All files transferred to " + $Computer
-		Write-Log -Message $massage
 	}
+	$massage = "All files transferred to " + $Computer
+		Write-Log -Message $massage
 }
 
 #-----------------------------------------------------------[Execution]------------------------------------------------------------
@@ -191,7 +190,7 @@ foreach($file in $filesPaths)
 {
 	if((Test-Path -Path $filesPaths) -eq $false)
 	{
-		$massage = $file + " file is missing"
+		$massage = "ERROR - " + $file + " file is missing"
 		Write-Log -Message $massage
 		Write-Log -Message "Script stopped because of MISSING FILE ERROR"
 		Write-Log -Message $logSeparator
@@ -216,6 +215,9 @@ foreach($computer in $remoteComputers)
 		#Transfer network drive full path creation
 		$networkDrive = "\\" + $computer + "\D$"
 
+		$massage = "Trying to map network drive to " + $computer + "..."
+		Write-Log -Message $massage
+
 		#Try to create network drive with given path
 		try
 		{
@@ -223,7 +225,7 @@ foreach($computer in $remoteComputers)
 		}
 		catch
 		{
-			$massage = "Fail to map network drive to " + $computer
+			$massage = "ERROR - Fail to map network drive to " + $computer
 			Write-Log -Message $massage
 			Write-Log -Message $_.Exception
         	Break
@@ -246,11 +248,14 @@ foreach($computer in $remoteComputers)
 	}
     else
     {
-		$message = $computer + "not reachable"
+		$message = "ERROR - " + $computer + "not reachable"
 		Write-Log -Message $massage
     }
 }
 
 Write-Log -Message "File transfer finished successfully"
 Write-Log -Message $logSeparator
+
+#Sends email with detailed report and deletes temporary ".\Report.txt" file
 Send-Report
+Remove-Item -Path $report

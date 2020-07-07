@@ -69,7 +69,7 @@ function Write-Log
 {
     param([String]$Message)
 
-	if($Massage -eq $logSeparator)
+	if($Message -eq $logSeparator)
 	{
 		Add-content -Path $logfile -Value $logSeparator
 		Add-content -Path $report -Value $logSeparator
@@ -148,14 +148,18 @@ function Start-FileTransfer
 	{
 		try
 		{
+			#File name extraction from file full path
 			$fileName = Split-Path $file -leaf
+
+			$massage = "Transferring file " + $fileName + " file to " + $Computer
+			Write-Log -Message $massage
 			Copy-Item -Path $file -Destination $DestinationPath
 			$massage = "File " + $fileName + " transferred to " + $Computer
 			Write-Log -Message $massage
 		}
 		catch
 		{
-			$massage = "Fail to trasfer " + $fileName + " file to " + $Computer
+			$massage = "Fail to transfer " + $fileName + " file to " + $Computer
 			Write-Log -Message $massage
 			Write-Log -Message $_.Exception
         	Break

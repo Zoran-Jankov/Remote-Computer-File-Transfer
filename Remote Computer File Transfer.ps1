@@ -87,7 +87,7 @@ function Write-Log
 
 function Send-Report
 {
-	$body = Get-Content -Path $report
+	$body = Get-Content -Path $report -Raw
 	Send-MailMessage -To $receiverEmail -From $senderEmail -Subject $subject -Body $body -SmtpServer $smpt -Port $port
 }
 

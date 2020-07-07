@@ -32,6 +32,9 @@ $logfile = '.\File Transfer Log.txt'
 New-Item -Path '.\Report.txt' -ItemType File
 $report = '.\Report.txt'
 
+#Defining log separator
+$logSeparator = "===================================================================================================="
+
 #Loading file paths and remote computers
 $filesPaths = Get-Content -Path '.\Files Paths.txt'
 $remoteComputers = Get-Content -Path '.\Remote Computers.txt'
@@ -66,11 +69,20 @@ function Write-Log
 {
     param([String]$Message)
 
-    $timestamp = Get-Date -Format "yyyy.MM.dd. HH:mm:ss"
-    $logEntry = $timestamp + " - " + $Message
-	Add-content -Path $logfile -Value $logEntry
-	Add-content -Path $report -Value $logEntry
-	Write-Output - $logEntry
+	if($Massage -eq $logSeparator)
+	{
+		Add-content -Path $logfile -Value $logSeparator
+		Add-content -Path $report -Value $logSeparator
+		Write-Output - $logSeparator
+	}
+	else
+	{
+		$timestamp = Get-Date -Format "yyyy.MM.dd. HH:mm:ss"
+    	$logEntry = $timestamp + " - " + $Message
+		Add-content -Path $logfile -Value $logEntry
+		Add-content -Path $report -Value $logEntry
+		Write-Output - $logEntry
+	}
 }
 
 function Send-Report
@@ -110,7 +122,25 @@ function Deploy-TransferFolder
     }
 }
 
+<#
+.SYNOPSIS
+Transfers files from '.\Files Paths.txt' list to remote computer.
 
+.DESCRIPTION
+Transfers files from '.\Files Paths.txt' list to remote computer. Log errors while file transfering.
+
+.PARAMETER DestinationPath
+Full path to file transfer folder.
+
+.PARAMETER Computer
+Name of the remote computer to which files are being transferred.
+
+.EXAMPLE
+An example
+
+.NOTES
+General notes
+#>
 function Start-FileTransfer
 {
 	param([string]$DestinationPath, [string]$Computer)
@@ -119,13 +149,15 @@ function Start-FileTransfer
 	{
 		try
 		{
-			Copy-Item -Path $file -Destination $DestinationPath
 			$fileName = Split-Path $file -leaf
+			Copy-Item -Path $file -Destination $DestinationPath
 			$massage = "File " + $fileName + " transferred to " + $Computer
 			Write-Log -Message $massage
 		}
 		catch
 		{
+			$massage = "Fail to trasfer " + $fileName + " file to " + $Computer
+			Write-Log -Message $massage
 			Write-Log -Message $_.Exception
         	Break
 		}
@@ -138,7 +170,7 @@ function Start-FileTransfer
 #-----------------------------------------------------------[Execution]------------------------------------------------------------
 
 #Welcome message
-Write-Log -Message "===================================================================================================="
+Write-Log -Message $logSeparator
 Write-Output "Remote Computer File Transfer"
 
 #Get username and password from prompt
@@ -159,7 +191,7 @@ foreach($file in $filesPaths)
 		$massage = $file + " file is missing"
 		Write-Log -Message $massage
 		Write-Log -Message "Script stopped because of MISSING FILE ERROR"
-		Write-Log -Message "===================================================================================================="
+		Write-Log -Message $logSeparator
 		Send-Report
 		Exit
 	}
@@ -188,6 +220,8 @@ foreach($computer in $remoteComputers)
 		}
 		catch
 		{
+			$massage = "Fail to map network drive to " + $computer
+			Write-Log -Message $massage
 			Write-Log -Message $_.Exception
         	Break
 		}
@@ -215,5 +249,5 @@ foreach($computer in $remoteComputers)
 }
 
 Write-Log -Message "File transfer finished successfully"
-Write-Log -Message "===================================================================================================="
+Write-Log -Message $logSeparator
 Send-Report

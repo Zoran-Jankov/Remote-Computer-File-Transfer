@@ -8,7 +8,7 @@ in '.\Remote Computers.txt' user can write list of remote computers to which fil
 Script generate log file and report that is sent via email to administrators.
 
 .NOTES
-	Version:        1.0
+	Version:        1.2
 	Author:         Zoran Jankov
 	Creation Date:  06.07.2020.
 #>

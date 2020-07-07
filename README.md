@@ -6,5 +6,5 @@
 This script transfers files to remote computers. In '.\Files Paths.txt' file user can write full paths to files for transfer, and in '.\Remote Computers.txt' user can write list of remote computers to which files are transferred, ether by hostname or IP address. Script generate log file and report that is sent via email to administrators.
 
 ### Credits
-Software architect and developer:  [Zoran Jankov](https://www.linkedin.com/in/zoran-jankov-b1054b196/)
+Script developer:  [Zoran Jankov](https://www.linkedin.com/in/zoran-jankov-b1054b196/)
 <a href="https://stackexchange.com/users/12947676/zoran-jankov"><img src="https://stackexchange.com/users/flair/12947676.png" width="208" height="58" alt="profile for Zoran Jankov on Stack Exchange, a network of free, community-driven Q&amp;A sites" title="profile for Zoran Jankov on Stack Exchange, a network of free, community-driven Q&amp;A sites" /></a>

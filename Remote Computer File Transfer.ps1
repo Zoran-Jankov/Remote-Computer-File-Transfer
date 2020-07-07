@@ -103,7 +103,6 @@ Full path of the folder.
 
 .EXAMPLE
 Deploy-TransferFolder -Path "\\RemoteComputer\D$\Transfer Folder"
-
 #>
 function Deploy-TransferFolder
 {
@@ -138,7 +137,6 @@ Full path to file transfer folder.
 
 .PARAMETER Computer
 Name of the remote computer to which files are being transferred.
-
 #>
 function Start-FileTransfer
 {

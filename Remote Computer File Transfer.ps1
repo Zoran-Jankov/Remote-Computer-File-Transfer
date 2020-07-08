@@ -281,7 +281,7 @@ foreach($computer in $remoteComputers)
     }
 }
 
-Write-Log -Message "Successfully finished file transfer"
+Write-Log -Message "Successfully completed -Remote Computer File Transfer- PowerShell Script"
 Write-Log -Message $logSeparator
 
 #Sends email with detailed report and deletes temporary ".\Report.txt" file

@@ -48,7 +48,7 @@ $port = 25
 $receiverEmail = "system.administrators@company.com"
 $senderEmail = "powershell@company.com"
 $subject = "File Deletion Report"
-$body = "This is an automated message sent from PowerShell script. File Deletion script has finished executing."
+$body = "This is an automated message sent from PowerShell script. Remote Computer File Transfer script has finished executing."
 
 #-----------------------------------------------------------[Functions]------------------------------------------------------------
 

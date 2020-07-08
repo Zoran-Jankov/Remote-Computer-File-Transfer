@@ -5,10 +5,10 @@ This script transfers files to remote computers.
 .DESCRIPTION
 This script transfers files to remote computers. In '.\Files Paths.txt' file user can write full paths to files for transfer, and
 in '.\Remote Computers.txt' user can write list of remote computers to which files are transferred, ether by hostname or IP address.
-Script generates detailed log file and report that is sent via email to system administrators.
+Script generates detailed log file, '.\File Transfer Log.log', and report that is sent via email to system administrators.
 
 .NOTES
-	Version:        1.2
+	Version:        1.3
 	Author:         Zoran Jankov
 	Creation Date:  06.07.2020.
 #>
@@ -28,9 +28,12 @@ $networkDrive = "T"
 $transferFolder = "\Transfer Folder"
 
 #Defining log files
-$logfile = '.\File Transfer Log.txt'
-New-Item -Path '.\Report.txt' -ItemType File
-$report = '.\Report.txt'
+$logfile = '.\File Transfer Log.log'
+New-Item -Path '.\Report.log' -ItemType File
+$report = '.\Report.log'
+
+#Defining log title
+$logTitle = "======================= Remote Computer File Transfer PowerShell Script Log ========================"
 
 #Defining log separator
 $logSeparator = "===================================================================================================="
@@ -40,11 +43,12 @@ $filesPaths = Get-Content -Path '.\Files Paths.txt'
 $remoteComputers = Get-Content -Path '.\Remote Computers.txt'
 
 #Mail settings (enter your on mail settings)
-$receiverEmail = "itadministrator@company.com"
-$senderEmail = "powershell@company.com"
-$subject = "File Transfer Report"
-$smpt = "smpt.mail.com"
+$smtp = "smtp.mail.com"
 $port = 25
+$receiverEmail = "system.administrators@company.com"
+$senderEmail = "powershell@company.com"
+$subject = "File Deletion Report"
+$body = "This is an automated message sent from PowerShell script. File Deletion script has finished executing."
 
 #-----------------------------------------------------------[Functions]------------------------------------------------------------
 
@@ -53,31 +57,31 @@ $port = 25
 Writes a log entry
 
 .DESCRIPTION
-Creates a log entry with timestamp and message passed thru a parameter $Massage, and saves the log entry to log file
+Creates a log entry with timestamp and message passed thru a parameter $Message, and saves the log entry to log file
 ".\File Transfer Log.txt" Timestamp is not written if $Message parameter is defined $logSeparator.
 
 .PARAMETER Message
 String value to be writen in the log file alongside timestamp
 
 .EXAMPLE
-Write-Log -Message "File sorting started"
+Write-Log -Message "Successfully transferred"
 
 .NOTES
-Format of the timestamp in "yyyy.MM.dd. HH:mm:ss" and this function adds " - " after timestamp and before the main massage.
+Format of the timestamp in "yyyy.MM.dd. HH:mm:ss:fff" and this function adds " - " after timestamp and before the main message.
 #>
 function Write-Log
 {
     param([String]$Message)
 
-	if($Message -eq $logSeparator)
+	if(($Message -eq $logSeparator) -or ($Message -eq $logTitle))
 	{
-		Add-content -Path $logfile -Value $logSeparator
-		Add-content -Path $report -Value $logSeparator
-		Write-Output - $logSeparator
+		Add-content -Path $logfile -Value $Message
+		Add-content -Path $report -Value $Message
+		Write-Output - $Message
 	}
 	else
 	{
-		$timestamp = Get-Date -Format "yyyy.MM.dd. HH:mm:ss"
+		$timestamp = Get-Date -Format "yyyy.MM.dd. HH:mm:ss:fff"
     	$logEntry = $timestamp + " - " + $Message
 		Add-content -Path $logfile -Value $logEntry
 		Add-content -Path $report -Value $logEntry
@@ -85,10 +89,23 @@ function Write-Log
 	}
 }
 
+<#
+.SYNOPSIS
+Sends a Report.log file to defined email address
+
+.DESCRIPTION
+This function sends a Report.log file as an attachment to defined email address
+#>
 function Send-Report
 {
-	$body = Get-Content -Path $report -Raw
-	Send-MailMessage -To $receiverEmail -From $senderEmail -Subject $subject -Body $body -SmtpServer $smpt -Port $port
+    Send-MailMessage -SmtpServer $smtp `
+                     -Port $port `
+                     -To $receiverEmail `
+                     -From $senderEmail `
+                     -Subject $subject `
+                     -Body $body `
+                     -Attachments $report
+
 	Remove-Item -Path $report
 }
 
@@ -109,19 +126,25 @@ function Deploy-TransferFolder
 {
     param([String]$Path)
 
+	$message = "Attempting to access " + $networkDrive + $transferFolder + " folder"
+	Write-Log -Message $message
+
     if((Test-Path $Path) -eq $false)
     {
-		$message = $networkDrive + $transferFolder + " does not exists"
+		$message = "Failed to access " + $networkDrive + $transferFolder + " folder - does not exist"
+		Write-Log -Message $message
+
+		$message = "Attempting to create " + $networkDrive + $transferFolder + " folder"
 		Write-Log -Message $message
 
 		New-Item -Path $Path -ItemType "Directory"
 
-		$message = $networkDrive + $transferFolder + " folder created"
+		$message = "Successfully created " + $networkDrive + $transferFolder + " folder"
 		Write-Log -Message $message
 	}
 	else
 	{
-		$message = $networkDrive + $transferFolder + " folder checked and present"
+		$message = "Successfully accessed " + $networkDrive + $transferFolder + " folder"
 		Write-Log -Message $message
 	}
 }
@@ -148,75 +171,80 @@ function Start-FileTransfer
 		#File name extraction from file full path
 		$fileName = Split-Path $file -leaf
 
-		$massage = "Transferring file " + $fileName + " file to " + $Computer + "..."
-		Write-Log -Message $massage
+		$message = "Attempting to transfer " + $fileName + " file to " + $Computer + " remote computer"
+		Write-Log -Message $message
 		
 		try
 		{
-			
 			Copy-Item -Path $file -Destination $DestinationPath
-			$massage = "File " + $fileName + " transferred to " + $Computer
-			Write-Log -Message $massage
+			$message = "Successfully transferred " + $fileName + " file to " + $Computer + " remote computer"
+			Write-Log -Message $message
 		}
 		catch
 		{
-			$massage = "ERROR - Fail to transfer " + $fileName + " file to " + $Computer
-			Write-Log -Message $massage
+			$message = "Failed to transfer " + $fileName + " file to " + $Computer + " remote computer"
+			Write-Log -Message $message
 			Write-Log -Message $_.Exception
 		}
 	}
-	$massage = "All files transferred to " + $Computer
-		Write-Log -Message $massage
+
+	$message = "Successfully transferred files to " + $Computer + " remote computer"
+	Write-Log -Message $message
 }
 
 #-----------------------------------------------------------[Execution]------------------------------------------------------------
 
-#Welcome message
+Write-Log -Message $logTitle
 Write-Log -Message $logSeparator
-Write-Output "Remote Computer File Transfer"
 
 #Get username and password from prompt
 $user = Read-Host -Prompt "Enter username"
 $password = Read-Host -Prompt "Enter password" -AsSecureString
-$massage = "User " + $user + " entered credentials"
-Write-Log -Message $massage
+$message = "User " + $user + " entered credentials"
+Write-Log -Message $message
 
 #Create credentials
 $credentials = New-Object -TypeName System.Management.Automation.PSCredential($user, $password)
 
-Write-Log -Message "Checking files for transfer..."
+Write-Log -Message "Attempting to access files for transfer"
 
 foreach($file in $filesPaths)
 {
 	if((Test-Path -Path $filesPaths) -eq $false)
 	{
-		$massage = "ERROR - " + $file + " file is missing"
-		Write-Log -Message $massage
-		Write-Log -Message "Script stopped because of MISSING FILE ERROR"
+		$message = "Failed to access " + $file + " file. It does not exist."
+		Write-Log -Message $message
+		Write-Log -Message "Script stopped - MISSING FILE ERROR"
 		Write-Log -Message $logSeparator
 		Send-Report
 		Exit
 	}
 	else
 	{
-		$massage = $file + " file is is ready for transfer"
-		Write-Log -Message $massage
+		$message = "Successfully accessed " + $file + " file - ready for transfer."
+		Write-Log -Message $message
 	}
 }
 
-Write-Log -Message "All files are checked and present"
+Write-Log -Message "Successfully accessed all files - ready for transfer."
 
 #Start file transfer
-Write-Log -Message "File transfer started..."
+Write-Log -Message "Started file transfer"
 foreach($computer in $remoteComputers)
 {
+	$message = "Attempting to access " + $computer + " remote computer"
+	Write-Log -Message $message
+
 	if(Test-Connection $computer -Quiet -Count 1)
 	{
+		$message = "Successfully accessed " + $computer + " remote computer"
+		Write-Log -Message $message
+
 		#Transfer network drive full path creation
 		$networkDrive = "\\" + $computer + "\D$"
 
-		$massage = "Trying to map network drive to " + $computer + "..."
-		Write-Log -Message $massage
+		$message = "Attempting to map network drive to " + $computer + " remote computer"
+		Write-Log -Message $message
 
 		#Try to create network drive with given path
 		try
@@ -225,14 +253,14 @@ foreach($computer in $remoteComputers)
 		}
 		catch
 		{
-			$massage = "ERROR - Fail to map network drive to " + $computer
-			Write-Log -Message $massage
+			$message = "Failed to map network drive to " + $computer + " remote computer"
+			Write-Log -Message $message
 			Write-Log -Message $_.Exception
         	Break
 		}
 
-		$massage = "Network drive mapped to " + $computer
-		Write-Log -Message $massage
+		$message = "Successfully mapped network drive to " + $computer + " remote computer"
+		Write-Log -Message $message
 
 		#Transfer fodler full path creation
 		$destinationPath = "T:" + $transferFolder
@@ -243,17 +271,17 @@ foreach($computer in $remoteComputers)
 
 		#Network drive removal
 		Remove-PSDrive -Name $networkDrive
-		$massage = "Network drive removed from " + $computer
-		Write-Log -Message $massage
+		$message = "Successfully removed network drive from " + $computer + " remote computer"
+		Write-Log -Message $message
 	}
     else
     {
-		$message = "ERROR - " + $computer + "not reachable"
-		Write-Log -Message $massage
+		$message = "Failed to access " + $computer + " remote computer"
+		Write-Log -Message $message
     }
 }
 
-Write-Log -Message "File transfer finished successfully"
+Write-Log -Message "Successfully finished file transfer"
 Write-Log -Message $logSeparator
 
 #Sends email with detailed report and deletes temporary ".\Report.txt" file

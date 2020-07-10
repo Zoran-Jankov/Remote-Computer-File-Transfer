@@ -131,7 +131,7 @@ function Deploy-TransferFolder
 
     if((Test-Path $Path) -eq $false)
     {
-		$message = "Failed to access " + $networkDrive + $transferFolder + " folder - FOLDER MISSING ERROR"
+		$message = "Failed to access " + $networkDrive + $transferFolder + " folder - MISSING FOLDER ERROR"
 		Write-Log -Message $message
 
 		$message = "Attempting to create " + $networkDrive + $transferFolder + " folder"

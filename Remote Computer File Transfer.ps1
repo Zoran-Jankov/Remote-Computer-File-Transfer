@@ -21,6 +21,11 @@ $ErrorActionPreference = "SilentlyContinue"
 #Clears the contents of the DNS client cache
 Clear-DnsClientCache
 
+#File counters
+$global:totalSuccessfulFilesTransferd = 0
+$global:totalSuccessfulComputerAccess = 0
+$global:totalFailedComputerAccess = 0
+
 #Defining network drive thru which files will be to transferred
 $networkDrive = "T"
 
@@ -32,23 +37,18 @@ $logfile = '.\File Transfer Log.log'
 New-Item -Path '.\Report.log' -ItemType File
 $report = '.\Report.log'
 
-#Defining log title
-$logTitle = "======================= Remote Computer File Transfer PowerShell Script Log ========================"
-
-#Defining log separator
-$logSeparator = "===================================================================================================="
+#Loading script settings
+$settings = Get-Content '.\Settings.cfg' | Select-Object | ConvertFrom-StringData
 
 #Loading file paths and remote computers
 $filesPaths = Get-Content -Path '.\Files Paths.txt'
 $remoteComputers = Get-Content -Path '.\Remote Computers.txt'
 
-#Mail settings (enter your on mail settings)
-$smtp = "smtp.mail.com"
-$port = 25
-$receiverEmail = "system.administrators@company.com"
-$senderEmail = "powershell@company.com"
-$subject = "File Deletion Report"
-$body = "This is an automated message sent from PowerShell script. Remote Computer File Transfer script has finished executing."
+#Defining log title
+$logTitle = "======================= Remote Computer File Transfer PowerShell Script Log ========================"
+
+#Defining log separator
+$logSeparator = "===================================================================================================="
 
 #-----------------------------------------------------------[Functions]------------------------------------------------------------
 
@@ -76,8 +76,11 @@ function Write-Log
 	if(($Message -eq $logSeparator) -or ($Message -eq $logTitle))
 	{
 		Add-content -Path $logfile -Value $Message
-		Add-content -Path $report -Value $Message
-		Write-Output - $Message
+        Add-content -Path $report -Value $Message
+        if($settings.WRITE_OUTPUT -eq "true")
+        {
+            Write-Output $Message
+        }
 	}
 	else
 	{
@@ -85,7 +88,10 @@ function Write-Log
     	$logEntry = $timestamp + " - " + $Message
 		Add-content -Path $logfile -Value $logEntry
 		Add-content -Path $report -Value $logEntry
-		Write-Output - $logEntry
+        if($settings.WRITE_OUTPUT -eq "true")
+        {
+            Write-Output $Message
+        }
 	}
 }
 
@@ -98,13 +104,19 @@ This function sends a Report.log file as an attachment to defined email address
 #>
 function Send-Report
 {
-    Send-MailMessage -SmtpServer $smtp `
-                     -Port $port `
-                     -To $receiverEmail `
-                     -From $senderEmail `
-                     -Subject $subject `
-                     -Body $body `
-                     -Attachments $report
+    param([string]$FinalMessage)
+
+    if($settings.SEND_REPORT -eq "true")
+    {
+        $body = $settings.BODY + "`n" + $FinalMessage
+        Send-MailMessage -SmtpServer $settings.SMTP `
+                         -Port $settings.PORT `
+                         -To $settings.RECEIVER `
+                         -From $settings.SENDER `
+                         -Subject $settings.SUBJECT `
+                         -Body $body `
+                         -Attachments $report
+    }
 
 	Remove-Item -Path $report
 }
@@ -288,9 +300,9 @@ foreach($computer in $remoteComputers)
 		Write-Log -Message $message
     }
 }
-
-Write-Log -Message "Successfully completed -Remote Computer File Transfer- PowerShell Script"
+$finalMessage = "Successfully completed -Remote Computer File Transfer- PowerShell Script"
+Write-Log -Message $finalMessage
 Write-Log -Message $logSeparator
 
 #Sends email with detailed report and deletes temporary ".\Report.txt" file
-Send-Report
+Send-Report -FinalMessage $finalMessage

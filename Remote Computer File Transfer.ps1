@@ -83,7 +83,7 @@ foreach($computer in $computerList)
 		$networkPath = "\\" + $computer + $partition
 
 		#Try to create network drive to D partition on the remote computer
-        if(New-PSDrive -Name $networkDrive -PSProvider "FileSystem" -Root $networkPath -Credential $Credential)
+        if(New-PSDrive -Name $networkDrive -Persist -PSProvider "FileSystem" -Root $networkPath -Credential $Credential)
         {
             $message = "Successfully mapped network drive to D partition on the " + $computer + " remote computer"
             Write-Log -OperationResult Success -Message $message
@@ -99,7 +99,7 @@ foreach($computer in $computerList)
 		    $networkPath = "\\" + $computer + $partition
             
             #Try to create network drive to C partition on the remote computer
-            if(New-PSDrive -Name $networkDrive -PSProvider "FileSystem" -Root $networkPath -Credential $Credential)
+            if(New-PSDrive -Name $networkDrive -Persist -PSProvider "FileSystem" -Root $networkPath -Credential $Credential)
             {
                 $message = "Successfully mapped network drive to C partition on the " + $computer + " remote computer"
                 Write-Log -OperationResult Success -Message $message

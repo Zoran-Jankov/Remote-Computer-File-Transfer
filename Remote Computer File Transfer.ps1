@@ -131,7 +131,7 @@ foreach($computer in $computerList)
         }
         else
         {
-            $failedTransfers += $fileList.ReadCount
+            $failedTransfers += $fileList.Length
             $message = "Canceld file transfer to " + $computer + " remote computer"
 	        Write-Log -OperationResult Fail -Message $message
         }
@@ -144,7 +144,7 @@ foreach($computer in $computerList)
     }
     else
     {
-        $failedTransfers += $fileList.ReadCount
+        $failedTransfers += $fileList.Length
         $message = "Canceld file transfer to " + $computer + " remote computer"
 	    Write-Log -OperationResult Fail -Message $message
     }

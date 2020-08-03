@@ -52,12 +52,12 @@ foreach($file in $fileList)
 {
 	if((Test-Path -Path $file) -eq $true)
 	{
-		$message = "Successfully checked " + $file + " file - ready for transfer."
+		$message = "Successfully checked " + $file + " file - ready for transfer"
 		Write-Log -OperationResult Success -Message $message
 	}
 	else
 	{
-        $message = "Failed to access " + $file + " file. It does not exist."
+        $message = "Failed to access " + $file + " file - it does not exist."
         Write-Log -OperationResult Fail -Message $message
         $message = "Script stopped - MISSING FILE ERROR"
 		Write-Log -OperationResult Fail -Message $message
@@ -67,7 +67,7 @@ foreach($file in $fileList)
 	}
 }
 
-Write-Log -OperationResult Success -Message "Successfully accessed all files - ready for transfer."
+Write-Log -OperationResult Success -Message "Successfully accessed all files - ready for transfer"
 
 #Start file transfer
 Write-Log -OperationResult Success -Message "Started file transfer"

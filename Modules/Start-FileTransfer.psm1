@@ -3,7 +3,7 @@
 Transfers files from defined list to remote computer.
 
 .DESCRIPTION
-Transfers files from the list to destination folder. Log errors and actions while files are transfered.
+Transfers files from the list to destination folder. Log errors and actions while files are transferred.
 
 .PARAMETER FileList
 List od file full names fot transfer

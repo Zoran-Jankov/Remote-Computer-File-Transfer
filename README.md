@@ -2,7 +2,7 @@
 
 [![made-with-powershell](https://img.shields.io/badge/PowerShell-1f425f?logo=Powershell)](https://microsoft.com/PowerShell)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/0841cf9963ab4f309625a678b4a9b7c3)](https://www.codacy.com/manual/zoran.jankov.87/Remote-Computer-File-Transfer?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Zoran-Jankov/Remote-Computer-File-Transfer&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/5c70c4753a6f4bb69767d238dc41eec0)](https://www.codacy.com/gh/Zoran-Jankov/Remote-Computer-File-Transfer/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Zoran-Jankov/Remote-Computer-File-Transfer&amp;utm_campaign=Badge_Grade)
 [![CodeFactor](https://www.codefactor.io/repository/github/zoran-jankov/remote-computer-file-transfer/badge)](https://www.codefactor.io/repository/github/zoran-jankov/remote-computer-file-transfer)
 
 ## Description

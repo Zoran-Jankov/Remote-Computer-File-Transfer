@@ -77,13 +77,13 @@ foreach ($Computer in $ComputerList) {
         else {
             Write-Log -Message "Failed to map network drive to C partition on the $Computer remote computer"
             $FailedTransfers += $FileList.Length
-	        Write-Log -Message "Canceld file transfer to $Computer remote computer"
+	        Write-Log -Message "Canceled file transfer to $Computer remote computer"
         }
 	}
     else {
         Write-Log -Message "Failed to connected to $Computer remote computer"
         $FailedTransfers += $FileList.Length
-	    Write-Log -Message "Canceld file transfer to $Computer remote computer"
+	    Write-Log -Message "Canceled file transfer to $Computer remote computer"
     }
 }
 

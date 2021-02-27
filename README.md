@@ -9,6 +9,12 @@
 
 This script transfers files to remote computers. In [`Files-Paths.txt`](https://github.com/Zoran-Jankov/Remote-Computer-File-Transfer/blob/master/File-Paths.txt) file user can write full paths to files for transfer, and in [`Remote-Computers.txt`](https://github.com/Zoran-Jankov/Remote-Computer-File-Transfer/blob/master/Computer-List.txt) user can write list of remote computers to which files are transferred, ether by hostname or IP address. Script generates detailed log file and report that is sent via email to system administrators.
 
+## Licence
+
+[***GNU General Public License Version 3***](https://www.gnu.org/licenses/gpl-3.0)
+
+[![License: GPL v3](https://www.gnu.org/graphics/gplv3-127x51.png)](https://www.gnu.org/licenses/gpl-3.0)
+
 ## Credits
 
 ### Author
